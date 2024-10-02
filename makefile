@@ -1,8 +1,14 @@
 ifeq ($(OS),Windows_NT) #Handles Windows systems
 CUR_DIR:= $(shell cd)
 SRC_DIR:=$(CUR_DIR)\src
-SOURCES:= $(shell where /r $(SRC_DIR) *.cpp)
-HEADERS:= $(shell where /r $(SRC_DIR) *.h)
+TARGETCPUS:=$(SRC_DIR)\CPUSched
+TARGETPC:=$(SRC_DIR)\Producer-Consumer
+PCSOURCES:= $(shell where /r $(TARGETPC) *.cpp)
+CPUSSOURCES:= $(shell where /r $(TARGETCPUS) *.cpp)
+
+PCHEADERS:= $(shell where /r $(TARGETPC) *.h)
+CPUSHEADERS:= $(shell where /r $(TARGETCPUS) *.h)
+
 Junk:=where /r $(SRC_DIR) *.o
 RM = del /Q /F
 CP = copy /Y
@@ -15,6 +21,8 @@ endif
 else #Handles Linux systems (Untested)
 CUR_DIR:= $(shell pwd)
 SRC_DIR:=$(CUR_DIR)\src
+TARGETCPUS:=$(SRC_DIR)\CPUSched
+TARGETPC:=$(SRC_DIR)\Producer-Consumer
 SOURCES:= $(shell find src -name "*.cpp")
 HEADERS:= $(shell find src -name "*.h")
 Junk:=find src -name "*.o"
@@ -25,24 +33,36 @@ endif
 #Compilier to be used
 CXX := g++
 
-#Targets to be compilied
-TARGETS:=$(SRC_DIR)
 
 #Information for compiling
-OBJECTS:= $(patsubst %.cpp,%.o,$(SOURCES))
-HEADERSDIRS:= $(sort $(dir $(HEADERS)))
-INCLUDEFLAGS:=$(addprefix -I, $(HEADERSDIRS))
+PCOBJECTS:= $(patsubst %.cpp,%.o,$(PCSOURCES))
+PCHEADERSDIRS:= $(sort $(dir $(PCHEADERS)))
+PCINCLUDEFLAGS:=$(addprefix -I, $(PCHEADERSDIRS))
+
+CPUSOBJECTS:= $(patsubst %.cpp,%.o,$(CPUSSOURCES))
+CPUSHEADERSDIRS:= $(sort $(dir $(CPUSHEADERS)))
+CPUSINCLUDEFLAGS:=$(addprefix -I, $(CPUSHEADERSDIRS))
 
 #Name for the compiled object
 ProjectName:= Program
 
-all: $(TARGETS) RMJunk
+all: CPUSched ProducerConsumer
 
-$(TARGETS):$(OBJECTS)
-	$(CXX) $^ -o $(ProjectName).exe
+CPUSched: $(TARGETCPUS) RMJunk
 
-$(SRC_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $< -c $(INCLUDEFLAGS) -o $@
+ProducerConsumer: $(TARGETPC) RMJunk
+
+$(TARGETCPUS):$(CPUSOBJECTS)
+	$(CXX) $^ -o CPUSched.exe
+
+$(TARGETPC):$(PCOBJECTS)
+	$(CXX) $^ -o ProducerConsumer.exe
+
+$(TARGETCPUS)/%.o: $(TARGETCPUS)/%.cpp
+	$(CXX) $< -c $(CPUSINCLUDEFLAGS) -o $@
+
+$(TARGETPC)/%.o: $(TARGETPC)/%.cpp
+	$(CXX) $< -c $(PCINCLUDEFLAGS) -o $@
 
 RMJunk: #Removes the extra information left behind after compiling
 	$(RM) $(shell $(Junk))

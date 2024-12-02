@@ -12,7 +12,7 @@ std::vector<std::string> SplitString(std::string input)
 	for (int i = 0; i < input.size(); i++)
 	{
 		if (word.size()==1&&((word[0] >= 21 && word[0] <= 47) || (word[0] >= 58 && word[0] <= 64) 
-			|| (word[0] >= 91 && word[0] <= 96) || (word[0] >= 123 && word[0] <= 126))&&word[0]!=39)
+			|| (word[0] >= 91 && word[0] <= 96) || (word[0] >= 123 && word[0] <= 126)||word[i]=='\t')&&word[0]!=39)
 		{
 			BrokenString.push_back(word);
 			word = "";
@@ -23,7 +23,7 @@ std::vector<std::string> SplitString(std::string input)
 			word = "";
 		}
 		else if (((input[i] >= 21 && input[i] <= 47) || (input[i] >= 58 && input[i] <= 64)
-			|| (input[i] >= 91 && input[i] <= 96) || (input[i] >= 123 && input[i] <= 126))&&input[i]!=39)
+			|| (input[i] >= 91 && input[i] <= 96) || (input[i] >= 123 && input[i] <= 126)||input[i]=='\t')&&input[i]!=39)
 		{
 			if (word != "")
 				BrokenString.push_back(word);
@@ -62,6 +62,22 @@ std::vector<std::string> SplitStringBySpaceOnly(std::string input)
 		if (i + 1 == input.size()&&word!="")
 			BrokenString.push_back(word);
 	}
+	return BrokenString;
+}
+
+std::vector<std::string> SplitStringByDelimiter(std::string input, char delimiter)
+{
+	std::vector <std::string> BrokenString;
+	while (input!="")
+	{
+		std::size_t target = input.find(delimiter);
+		BrokenString.push_back(input.substr(0, target));
+		input=input.substr(target+1, input.size()-target-1);
+		if(target==input.npos){
+			return BrokenString;
+		}
+	}
+	
 	return BrokenString;
 }
 std::string RemovePunctuation(std::string input)

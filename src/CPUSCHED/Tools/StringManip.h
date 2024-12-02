@@ -6,6 +6,7 @@
 
 std::vector<std::string> SplitString(std::string);
 std::vector<std::string> SplitStringBySpaceOnly(std::string);
+std::vector<std::string> SplitStringByDelimiter(std::string input, char delimiter);
 std::string RemovePunctuation(std::string);
 double StringtoDouble(std::string);
 int StringtoInt(std::string);

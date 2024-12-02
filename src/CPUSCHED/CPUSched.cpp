@@ -6,6 +6,16 @@
 #include"Tools/StringManip.h"
 #include"Tools/UIHelper.h"
 #include"Tools/Choices.h"
+/*
+A process is of the data type std::pair<int, std::pair<int, int>> thus each element is accessed as followed:
+Arival time: Process.first
+CPU Burst: Process.second.first 
+Priority: Process.second.second
+*/
+/*
+Creates a vector of Processes from a given info as requested from the User
+Each Process conatains 3 numbers: Arrival time, CPU Burst, Priority
+*/
 std::vector<std::pair<int, std::pair<int, int>>> setup(){
     int numOfProcesses;
     std::cout<<"How many processes are there?"<<std::endl;
@@ -23,6 +33,14 @@ std::vector<std::pair<int, std::pair<int, int>>> setup(){
     }
     return processes;
 }
+/*
+Creates a vector of Processes from a given text file in the Data Directory
+Each Process conatains 3 numbers: Arrival time, CPU Burst, Priority
+First line of the text file is ignored and each number should be tab deliminated
+example:
+Junk
+15  23  5
+*/
 std::vector<std::pair<int, std::pair<int, int>>> LoadProcessesFromFile(std::string fileName){
     fileName = "Data/"+fileName;
     std::vector<std::pair<int, std::pair<int, int>>> Processes;
@@ -48,6 +66,9 @@ void listProcesses(std::vector<std::pair<int, std::pair<int, int>>> Processes){
         std::cout<<std::setw(5)<<i+1<<std::setw(10)<<"|"<<std::setw(5)<<Processes[i].first<<std::setw(10)<<"|"<<std::setw(8)<<Processes[i].second.first<<std::setw(5)<<"|"<<std::setw(5)<<Processes[i].second.second<<std::endl;
     } 
 }
+/*
+
+*/
 void listResults(std::vector<std::pair<int, int>> Processes, std::vector<std::pair<int,std::pair<int,int>>> ProcessesFinished){
     headerNoCls("Results", 70, '=');
     std::cout<<std::setw(10)<<"Process number"<<"|"<<std::setw(10)<<"Arrival time"<<std::setw(5)<<"|"<<std::setw(10)<<"CPU Burst"<<std::setw(5)<<"|"<<std::setw(10)<<"Start Time"<<std::setw(5)<<"|"<<std::setw(10)<<"Completion"<<std::endl;
@@ -62,6 +83,11 @@ void listResults(std::vector<std::pair<int, int>> Processes, std::vector<std::pa
         }
     } 
 }
+
+/*
+From assignment 2
+Is created for FIFO without priority
+*/
 std::vector<std::pair<int, std::pair<int, int>>> runtime(std::vector<std::pair<int, int>> Processes){
     std::queue<std::pair<int,std::pair<int,int>>> ProcessQ;
     std::vector<std::pair<int, std::pair<int,int>>> ProcessesLeftToQ;

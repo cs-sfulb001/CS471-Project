@@ -21,10 +21,16 @@ endif
 else #Handles Linux systems (Untested)
 CUR_DIR:= $(shell pwd)
 SRC_DIR:=$(CUR_DIR)\src
+
 TARGETCPUS:=$(SRC_DIR)\CPUSched
 TARGETPC:=$(SRC_DIR)\Producer-Consumer
-SOURCES:= $(shell find src -name "*.cpp")
-HEADERS:= $(shell find src -name "*.h")
+
+PCSOURCES:= $(shell find $(TARGETPC) -name "*.cpp")
+CPUSSOURCES:= $(shell find $(TARGETCPUS) -name "*.cpp")
+
+PCHEADERS:= $(shell find $(TARGETPC) -name "*.h")
+CPUSHEADERS:= $(shell find $(TARGETCPUS) -name "*.h")
+
 Junk:=find src -name "*.o"
 RM = rm -rf
 CP = cp -f

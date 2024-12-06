@@ -34,11 +34,12 @@ std::vector<Process> setup(){
         std::cout<<"What is the Priority of process "<<(i+1)<<"?"<<std::endl;
         std::cin>>priority;
 
+        process.setProcessID(i);
         process.setArrivalTime(arrival);
         process.setBurstTime(burst);
         process.setPriority(priority);
 
-        processes.push_back(process);   
+        processes.push_back(process);
     }
     return processes;
 }
@@ -57,13 +58,17 @@ std::vector<Process> LoadProcessesFromFile(std::string fileName){
     file.open(fileName);
     std::string line;
     std::getline(file, line); //Skip first line
+    int i = 0;
     while(std::getline(file, line)){
         Process process;
         std::vector<std::string> brokenLine = SplitStringByDelimiter(line, '\t');
+        process.setProcessID(i);
         process.setArrivalTime(stoi(brokenLine[0]));
         process.setBurstTime(stoi(brokenLine[1]));
         process.setPriority(stoi(brokenLine[2]));
         Processes.push_back(process);
+        ++i;
+
     }
     return Processes;
 }
@@ -72,7 +77,7 @@ void listProcesses(std::vector<Process> Processes){
     std::cout<<"Process number | Arrival time | CPU Burst | Priority "<<std::endl;
     dividingLine(45, '_');
     for(int i=0;i<Processes.size();i++){
-        std::cout<<std::setw(5)<<i+1<<std::setw(10)<<"|"<<std::setw(5)<<Processes[i].getArrivalTime() <<std::setw(10)<<"|"<<std::setw(8)<<Processes[i].getBurstTime()<<std::setw(5)<<"|"<<std::setw(5)<<Processes[i].getPriority()<<std::endl;
+        std::cout<<std::setw(5)<<Processes[i].getProcessId()<<std::setw(10)<<"|"<<std::setw(5)<<Processes[i].getArrivalTime() <<std::setw(10)<<"|"<<std::setw(8)<<Processes[i].getBurstTime()<<std::setw(5)<<"|"<<std::setw(5)<<Processes[i].getPriority()<<std::endl;
     } 
 }
 /*
@@ -155,7 +160,12 @@ main(){
     switch(choiceList(choices))
     {
     case 0:
-        fifoOrder.sort();
+        // print the processes using FIFO scheduling
+        fifoOrder.printScheduledProcesses();
+
+        /* Calculates and prints out the Total time elapsed, CPU ultilzation, 
+        Average waiting time, Average turnaround time, and Response Time  */
+        fifoOrder.printResults();
         break;
     case 1:
 

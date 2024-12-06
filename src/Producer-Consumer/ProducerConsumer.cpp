@@ -39,6 +39,7 @@ main(){
         finshedConsumers=0;
         int empty = BufferSize;
         int full = 0;
+        std::cout<<ProducerConsumerCount[i].first<<" Producers threads and "<< ProducerConsumerCount[i].second<<" Consumer Threads started"<<std::endl;
         auto start_time = std::chrono::high_resolution_clock::now();
         //Create Threads for the ith interation
         running = 1;
@@ -46,13 +47,12 @@ main(){
         StartProducerThreads(ProducerConsumerCount[i].first, Buffer, full, empty, ProducerThreads);
         std::vector<std::thread> ConsumerThreads;
         StartConsumerThreads(ProducerConsumerCount[i].second, Buffer, full, empty, ConsumerThreads);
-        std::cout<<ProducerConsumerCount[i].first<<" Producers threads and "<< ProducerConsumerCount[i].second<<" Consumer Threads started"<<std::endl;
         for(int i = 0; i < ConsumerThreads.size(); i++){
             ConsumerThreads[i].join();
         }
         running = 0;
-        std::cout<<"Done with this interation"<<std::endl;
         auto end_time = std::chrono::high_resolution_clock::now();
+        std::cout<<"Done with this interation"<<std::endl;
         auto time = end_time-start_time;
         outputFile << std::setw(10) << ProducerConsumerCount[i].first <<std::setw(11) << "|"
                     << std::setw(10) << ProducerConsumerCount[i].second <<std::setw(12) << "|"
@@ -96,23 +96,17 @@ int insert_item(std::vector<bool>&buffer, int& full, int& empty){
     return -1;
 }
 void ProducerFunction(std::vector<bool>& buffer, int& full, int& empty){
-        std::cout<<"Producer has started"<<std::endl;
     while(running){
         int time = rand()%1000+1; 
-        std::cout<<"Producer is sleeping for "<<time<<"ms"<<std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(time));//Sleep for 1ms - 1s 
-        std::cout<<"Producer is now awake"<<std::endl;
         if(!running){//Prevents code from going into critical section if the process is set to end
             break;
         }
         while(empty==0); //Wait for an item to be avalible
-        std::cout<<"Producer waiting for Mutex"<<std::endl;
         WaitForSingleObject(Mutex, INFINITE);
-        std::cout<<"Producer has Mutex"<<std::endl;
         //Critical Section
         insert_item(buffer, full, empty);
         ReleaseMutex(Mutex);
-        std::cout<<"Producer released Mutex"<<std::endl;
     }
 }
 
@@ -141,18 +135,14 @@ void ConsumerFunction(std::vector<bool>& buffer, int& full, int& empty){ //Runs 
     while(!item){
         int time = rand()%1000+1;
         std::this_thread::sleep_for(std::chrono::milliseconds(time));//Sleep for 1ms - 1s
-        std::cout<<"Consumer is now awake"<<std::endl;
         while(full==0); //Wait for an item to be avalible
-        std::cout<<"Consumer waiting for Mutex"<<std::endl;
         WaitForSingleObject(Mutex, INFINITE);
-        std::cout<<"Consumer has Mutex"<<std::endl;
         //Critical Section
         if(remove_item(buffer, full, empty)==0){    
             item = 1;
             finshedConsumers++;
         }
         ReleaseMutex(Mutex);
-        std::cout<<"Consumer released Mutex"<<std::endl;
     }
 }
 

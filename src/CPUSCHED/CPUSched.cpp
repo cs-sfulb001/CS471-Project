@@ -6,6 +6,9 @@
 #include"Tools/StringManip.h"
 #include"Tools/UIHelper.h"
 #include"Tools/Choices.h"
+#include "Process.h"
+#include "FIFO.h"
+
 /*
 A process is of the data type std::pair<int, std::pair<int, int>> thus each element is accessed as followed:
 Arival time: Process.first
@@ -16,19 +19,25 @@ Priority: Process.second.second
 Creates a vector of Processes from a given info as requested from the User
 Each Process conatains 3 numbers: Arrival time, CPU Burst, Priority
 */
-std::vector<std::pair<int, std::pair<int, int>>> setup(){
+std::vector<Process> setup(){
     int numOfProcesses;
     std::cout<<"How many processes are there?"<<std::endl;
     std::cin>>numOfProcesses;
-    std::vector<std::pair<int, std::pair<int, int>>> processes;
+    std::vector<Process> processes;
     for(int i=0;i<numOfProcesses;i++){
-        std::pair<int, std::pair<int, int>> process;
+        Process process;
+        int arrival, burst, priority;
         std::cout<<"What is the arival time of process "<<(i+1)<<"?"<<std::endl;
-        std::cin>>process.first;
+        std::cin>>arrival;
         std::cout<<"What is the CPU Burst of process "<<(i+1)<<"?"<<std::endl;
-        std::cin>>process.second.first;
+        std::cin>>burst;
         std::cout<<"What is the Priority of process "<<(i+1)<<"?"<<std::endl;
-        std::cin>>process.second.second;
+        std::cin>>priority;
+
+        process.setArrivalTime(arrival);
+        process.setBurstTime(burst);
+        process.setPriority(priority);
+
         processes.push_back(process);   
     }
     return processes;
@@ -41,29 +50,29 @@ example:
 Junk
 15  23  5
 */
-std::vector<std::pair<int, std::pair<int, int>>> LoadProcessesFromFile(std::string fileName){
+std::vector<Process> LoadProcessesFromFile(std::string fileName){
     fileName = "Data/"+fileName;
-    std::vector<std::pair<int, std::pair<int, int>>> Processes;
+    std::vector<Process> Processes;
     std::ifstream file;
     file.open(fileName);
     std::string line;
     std::getline(file, line); //Skip first line
     while(std::getline(file, line)){
-        std::pair<int, std::pair<int, int>> process;
+        Process process;
         std::vector<std::string> brokenLine = SplitStringByDelimiter(line, '\t');
-        process.first = stoi(brokenLine[0]);
-        process.second.first = stoi(brokenLine[1]);
-        process.second.second = stoi(brokenLine[2]);
+        process.setArrivalTime(stoi(brokenLine[0]));
+        process.setBurstTime(stoi(brokenLine[1]));
+        process.setPriority(stoi(brokenLine[2]));
         Processes.push_back(process);
     }
     return Processes;
 }
-void listProcesses(std::vector<std::pair<int, std::pair<int, int>>> Processes){
+void listProcesses(std::vector<Process> Processes){
     headerNoCls("List of Processes", 45, '=');
     std::cout<<"Process number | Arrival time | CPU Burst | Priority "<<std::endl;
     dividingLine(45, '_');
     for(int i=0;i<Processes.size();i++){
-        std::cout<<std::setw(5)<<i+1<<std::setw(10)<<"|"<<std::setw(5)<<Processes[i].first<<std::setw(10)<<"|"<<std::setw(8)<<Processes[i].second.first<<std::setw(5)<<"|"<<std::setw(5)<<Processes[i].second.second<<std::endl;
+        std::cout<<std::setw(5)<<i+1<<std::setw(10)<<"|"<<std::setw(5)<<Processes[i].getArrivalTime() <<std::setw(10)<<"|"<<std::setw(8)<<Processes[i].getBurstTime()<<std::setw(5)<<"|"<<std::setw(5)<<Processes[i].getPriority()<<std::endl;
     } 
 }
 /*
@@ -129,7 +138,7 @@ std::vector<std::pair<int, std::pair<int, int>>> runtime(std::vector<std::pair<i
 main(){
     headerNoCls("CS571 Homework 2", 100, '_');
     headerNoCls("Define processes", 60, '*');
-    std::vector<std::pair<int, std::pair<int, int>>> Processes;
+    std::vector<Process> Processes;
     if(choiceYN("Would you like to create a custom process list?"))
     {
         Processes = setup();
@@ -139,12 +148,14 @@ main(){
         Processes = LoadProcessesFromFile(fileName);
     }
     listProcesses(Processes);
+    FIFO fifoOrder(Processes);
     std::vector<std::string> choices;
     choices.push_back("FIFO");
     choices.push_back("Priority with preemption");
-    switch (choiceList(choices))
+    switch(choiceList(choices))
     {
     case 0:
+        fifoOrder.sort();
         break;
     case 1:
 

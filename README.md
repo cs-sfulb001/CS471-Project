@@ -1,1 +1,3 @@
 # CPP-HTML-Experiment
+
+Inorder to run the programs you need the ablity to run makefiles and the windows.h library. To complie the programs run "make all" to generate an executable for both CPUSched and ProducerConsumer. Executebles can be generated seprately by running "make cpusched" or "make ProducerConsumer". After the executable has been generated, run them in the comandline. CPUSched will ask for User inputs and ProducerConsumer will automatically execute based off the information inside of "data/ProducerConsumer.txt". fPruducer COnsumer will generate an output file "data/RuntimeInfo.txt" with the runtime of each interation.

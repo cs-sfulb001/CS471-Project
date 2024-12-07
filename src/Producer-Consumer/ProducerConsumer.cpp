@@ -47,7 +47,7 @@ main(){
         StartProducerThreads(ProducerConsumerCount[i].first, Buffer, full, empty, ProducerThreads);
         std::vector<std::thread> ConsumerThreads;
         StartConsumerThreads(ProducerConsumerCount[i].second, Buffer, full, empty, ConsumerThreads);
-        for(int i = 0; i < ConsumerThreads.size(); i++){
+        for(int i = 0; i < ConsumerThreads.size(); i++){ //Wait for all the consumer threads to finish
             ConsumerThreads[i].join();
         }
         running = 0;
@@ -57,7 +57,7 @@ main(){
         outputFile << std::setw(10) << ProducerConsumerCount[i].first <<std::setw(11) << "|"
                     << std::setw(10) << ProducerConsumerCount[i].second <<std::setw(12) << "|"
                     << std::setw(6) << time/std::chrono::milliseconds(1)<<std::endl;
-        for(int i = 0; i < ProducerThreads.size();i++){
+        for(int i = 0; i < ProducerThreads.size();i++){ //Wait for all the Producer threads to finish
             std::cout<<"Waiting for Producer "<<i<<" to finish"<<std::endl;
             ProducerThreads[i].join();
         }
@@ -84,6 +84,11 @@ std::vector<std::pair<int, int>> readFile(){
 /*
     Producer Section
 */
+/*
+Adds an item to the provided buffer.
+Returns -1 if there is an error
+Returns 0 on success
+*/
 int insert_item(std::vector<bool>&buffer, int& full, int& empty){
     for(int i=0;i<buffer.size();i++){
         if(!buffer[i]){
@@ -96,7 +101,7 @@ int insert_item(std::vector<bool>&buffer, int& full, int& empty){
     return -1;
 }
 void ProducerFunction(std::vector<bool>& buffer, int& full, int& empty){
-    while(running){
+    while(running){//While the process is still running
         int time = rand()%1000+1; 
         std::this_thread::sleep_for(std::chrono::milliseconds(time));//Sleep for 1ms - 1s 
         if(!running){//Prevents code from going into critical section if the process is set to end
@@ -105,7 +110,8 @@ void ProducerFunction(std::vector<bool>& buffer, int& full, int& empty){
         while(empty==0); //Wait for an item to be avalible
         WaitForSingleObject(Mutex, INFINITE);
         //Critical Section
-        insert_item(buffer, full, empty);
+        insert_item(buffer, full, empty); //Produce an item
+        //End of critical section
         ReleaseMutex(Mutex);
     }
 }
@@ -118,6 +124,11 @@ void StartProducerThreads(int numberOfThreads, std::vector<bool>& buffer, int& f
 
 /*
     Consumer Section
+*/
+/*
+Removes an item from the provided buffer.
+Returns -1 if there is an error
+Returns 0 on success
 */
 int remove_item(std::vector<bool>&buffer, int& full, int& empty){
     for(int i=0;i<buffer.size();i++){
@@ -132,16 +143,17 @@ int remove_item(std::vector<bool>&buffer, int& full, int& empty){
 }
 void ConsumerFunction(std::vector<bool>& buffer, int& full, int& empty){ //Runs until a request has been fullfiled
     bool item =0;
-    while(!item){
+    while(!item){//While an item has not been recived
         int time = rand()%1000+1;
         std::this_thread::sleep_for(std::chrono::milliseconds(time));//Sleep for 1ms - 1s
         while(full==0); //Wait for an item to be avalible
         WaitForSingleObject(Mutex, INFINITE);
         //Critical Section
-        if(remove_item(buffer, full, empty)==0){    
-            item = 1;
+        if(remove_item(buffer, full, empty)==0){ //if an error does not occur
+            item = 1;//Mark the consumer having received and item
             finshedConsumers++;
         }
+        //End of critical section
         ReleaseMutex(Mutex);
     }
 }

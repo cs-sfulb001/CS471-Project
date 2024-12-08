@@ -8,5 +8,5 @@ Arrival time	CPU Burst length	Priority
 35	2	2
 37	4	4
 50	18	5
-67	3	3 
+67	3	3
 70	5	1

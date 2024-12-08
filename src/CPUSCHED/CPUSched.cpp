@@ -8,6 +8,7 @@
 #include"Tools/Choices.h"
 #include "Process.h"
 #include "FIFO.h"
+#include "PriorityWP.h"
 
 /*
 A process is of the data type std::pair<int, std::pair<int, int>> thus each element is accessed as followed:
@@ -154,6 +155,7 @@ main(){
     }
     listProcesses(Processes);
     FIFO fifoOrder(Processes);
+    PriorityWP priorityProcesses(Processes);
     std::vector<std::string> choices;
     choices.push_back("FIFO");
     choices.push_back("Priority with preemption");
@@ -166,8 +168,11 @@ main(){
         /* Calculates and prints out the Total time elapsed, CPU ultilzation, 
         Average waiting time, Average turnaround time, and Response Time  */
         fifoOrder.printResults();
+
         break;
     case 1:
+        priorityProcesses.prioitySort();
+        priorityProcesses.PrintResult();
 
         break;
     default:

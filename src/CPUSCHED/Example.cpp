@@ -1,6 +1,6 @@
 
 
-
+/*
 void priorityScheduling(vector<process> Processes){
     vector<queue> ProcessQueue;
     process* Running=nullptr;
@@ -38,3 +38,4 @@ void priorityScheduling(vector<process> Processes){
         step++;
     }
 }
+*/

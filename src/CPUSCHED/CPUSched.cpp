@@ -171,7 +171,7 @@ main(){
 
         break;
     case 1:
-        priorityProcesses.prioitySort();
+        priorityProcesses.prioityScheduling();
         priorityProcesses.PrintResult();
 
         break;

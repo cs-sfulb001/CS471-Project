@@ -18,17 +18,14 @@ class PriorityWP
 {
 private:
     std::vector<Process> processes;
-    std::vector<ArrayType> scheduled_processes;
+    std::vector<Process> scheduled_processes;
     int total_time;
     
 public:
     void PrintResult();
     
-    //checks que to see if the current process is in it
-    bool checkQueue(int processID, std::queue<Process> processqueue);
-
     // schedule the process using priority schduling
-    void prioitySort();
+    void prioityScheduling();
 
     // sort the processes in the queue
     std::queue<Process> sortProcessQue(std::queue<Process> prossesQue, Process newProcess);

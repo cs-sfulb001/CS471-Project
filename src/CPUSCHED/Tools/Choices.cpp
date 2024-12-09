@@ -23,7 +23,7 @@ bool choiceYN(std::string question)
 }
 std::string choiceWord(std::string question)
 {
-	std::cin.ignore(INT_MAX);
+	//std::cin.ignore(INT_MAX);
 	while (true)
 	{
 		std::cout << question << std::endl;

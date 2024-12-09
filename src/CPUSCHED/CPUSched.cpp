@@ -38,6 +38,7 @@ std::vector<Process> setup(){
         process.setProcessID(i);
         process.setArrivalTime(arrival);
         process.setBurstTime(burst);
+        process.setBurstRemaing(burst);
         process.setPriority(priority);
 
         processes.push_back(process);
@@ -66,6 +67,7 @@ std::vector<Process> LoadProcessesFromFile(std::string fileName){
         process.setProcessID(i);
         process.setArrivalTime(stoi(brokenLine[0]));
         process.setBurstTime(stoi(brokenLine[1]));
+        process.setBurstRemaing(stoi(brokenLine[1]));
         process.setPriority(stoi(brokenLine[2]));
         Processes.push_back(process);
         ++i;

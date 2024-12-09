@@ -22,6 +22,14 @@ private:
     int total_time;
     
 public:
+    void calculateThrouphput();
+
+    void calculateCPUutilization();
+
+    void calculateAverageTurnAroundTime();
+
+    void calculateAverageWaintingTime();
+
     void PrintResult();
     
     // schedule the process using priority schduling

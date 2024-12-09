@@ -15,17 +15,10 @@ void PriorityWP::prioityScheduling()
     headerNoCls("Results", 70, '=');
     std::cout << std::setw(10) << "Process number" << "|" << std::setw(10) << "Arrival time" << std::setw(5) << "|" << std::setw(10) << "CPU Burst" << std::setw(5) << "|" << std::setw(10) << "Start Time" << std::setw(5) << "|" << std::setw(10) << "Completion" << std::endl;
     dividingLine(45, '_');
-        //std::cout<<processes.size();
     while(processes.size()>0 || !end){
-        //std::cout<<processes.size()<<std::endl;
-        //std::cout<<step<<" Step"<<std::endl;
-        //waitTillEnter();
          while (processes.size() > 0 && processes[0].getArrivalTime() == step){
-            //std::cout<<"Pushing to Queue "<<std::endl;
             ProcessQueue[processes[0].getPriority()].push(processes[0]);
             processes.erase(processes.begin()); // removes the add process
-            //std::cout<<processes.size();
-            //waitTillEnter();
          }
          if(running == nullptr){
             for(int i = 0; i < ProcessQueue.size(); i++){//find highest priority
@@ -53,7 +46,6 @@ void PriorityWP::prioityScheduling()
         step++;
         if(running!=nullptr)
         {
-            //std::cout<<running->getRemaingBurst()<<std::endl;
             running->setBurstRemaing((running->getRemaingBurst())-1);
             if(running->getRemaingBurst()==0){
                 running->setCompletionTime(step);
@@ -68,13 +60,105 @@ void PriorityWP::prioityScheduling()
     total_time = step;
 }
 
+void PriorityWP::calculateCPUutilization()
+{
+
+    // holds the total burst time of the
+    double sum = 0;
+
+    // find the sum of the burst times
+    for (int i = 0; i < scheduled_processes.size(); i++)
+    {
+        sum = sum + scheduled_processes[i].getBurstTime();
+    }
+
+    // calculate the cpu utiliztion
+    double cpu_utilization = 100 * (sum / total_time);
+
+    // print the results of the calculation
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << std::left << std::setw(30) << "CPU Utilization:" << cpu_utilization << "%\n";
+}
+
+void PriorityWP::calculateAverageTurnAroundTime()
+{
+    // holds the total waiting total of all processed
+    double total_turnaround_time = 0;
+
+    // calculate the total turnaround time
+    for (int i = 0; i < scheduled_processes.size(); ++i)
+    {
+        // calculate the indiviadual turnaround time
+        total_turnaround_time += scheduled_processes[i].getCompletionTime() - scheduled_processes[i].getArrivalTime();
+    }
+
+    // calculate the average waiting time
+    double average_turnaround_time = total_turnaround_time / scheduled_processes.size();
+
+    // print the calculated average waiting time
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << std::left << std::setw(30) << "Average Turnaround Time" << average_turnaround_time << std::endl;
+}
+
+void PriorityWP::calculateAverageWaintingTime()
+{
+    // holds the total waiting total of all processed
+    double total_waiting_time = 0;
+
+    for (int i = 0; i < scheduled_processes.size(); ++i)
+    {
+        // calculate the waiting time
+        total_waiting_time += scheduled_processes[i].getStartTime() - scheduled_processes[i].getArrivalTime();
+    }
+
+    // calculate the average waiting time
+    double average_waiting_time = total_waiting_time / scheduled_processes.size();
+
+    // print the calculated average waiting time
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << std::left << std::setw(30) << "Average Waiting Time:" << average_waiting_time << std::endl;
+}
+
+void PriorityWP::calculateThrouphput()
+{
+
+    // holds the total burst time of the
+    double sumBurstTimes = 0;
+
+    // find the sum of the burst times
+    for (int i = 0; i < scheduled_processes.size(); i++)
+    {
+        sumBurstTimes = sumBurstTimes + scheduled_processes[i].getBurstTime();
+    }
+
+    // calculates the throughput
+    double throughput = sumBurstTimes / scheduled_processes.size();
+
+    // print the calculated throughput of the processes
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << std::left << std::setw(30) << "Throughput:" << throughput << std::endl;
+}
+
 void PriorityWP::PrintResult()
 {
     // prints ui stuff
     headerNoCls("Scheduling Results", 70, '=');
     dividingLine(50, '_');
 
-    std::cout << "this is the total time " << total_time << std::endl;
+    // print out the total time elapsed
+    std::cout << std::left << std::setw(30) << "Total Time Elapsed:" << total_time << std::endl;
+
+     // calculates and prints the cpu ultization
+    calculateCPUutilization();
+
+    // calculates and prints the processes throughput
+    calculateThrouphput();
+
+    // calculate and prints the average waiting time
+    calculateAverageWaintingTime();
+
+    // calculate and prints the average turn around time
+    calculateAverageTurnAroundTime();
 }
 
 
